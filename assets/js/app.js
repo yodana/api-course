@@ -21,10 +21,13 @@ import {
 import CustomersPage from "./pages/CustomersPage";
 import CustomersPageWithPagination from "./pages/CustomersPageWithPagination";
 import InvoicesPage from "./pages/InvoicesPage";
+import InvoicePage from "./pages/InvoicePage";
 import LoginPage from "./pages/LoginPage";
 import AuthApi from "./services/authAPI";
 import AuthContent from "./contents/AuthContent";
 import PrivateRoute from "./components/PrivateRoute";
+import CustomerPage from "./pages/CustomerPage";
+import RegisterPage from "./pages/RegisterPage";
 // Need jQuery? Install it with "yarn add jquery", then uncomment to import it.
 // import $ from 'jquery';
 
@@ -49,13 +52,22 @@ const App = () => {
         />
         <main className="container pt-5">
           <Switch>
+              <Route path="/register" component={RegisterPage}></Route>
             <Route
               path="/login"
              component={LoginPage}
             ></Route>
             <PrivateRoute
+              path="/invoices/:id"
+              component={InvoicePage}
+            />
+            <PrivateRoute
               path="/invoices"
               component={InvoicesPage}
+            />
+            <PrivateRoute
+              path="/customers/:id"
+              component={CustomerPage}
             />
             <PrivateRoute
               path="/customers"
