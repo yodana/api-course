@@ -1,32 +1,58 @@
 import axios from "axios";
+import Cache from "./cache";
+import {CUSTOMERS_API} from "./config";
 
-function findAll(){
-    return axios.get("http://127.0.0.1:8000/api/customers")
-    .then(reponse => reponse.data['hydra:member']);
+async function findAll(){
+
+    const cachedCustomers = await Cache.get("customers");
+    if(cachedCustomers) return cachedCustomers;
+
+    return axios.get(CUSTOMERS_API)
+    .then(reponse => {
+        const customers = reponse.data['hydra:member']
+         Cache.set("customers", customers);  
+         return customers;
+    });
 }
 
 function deleteCustomer(id){
-    return  axios.delete("http://127.0.0.1:8000/api/customers/" + id);
+    return  axios.delete(CUSTOMERS_API + "/" + id).then(async response => {
+        const cachedCustomers = await Cache.get("customers");
+
+        if (cachedCustomers){
+                Cache.set("customers", cachedCustomers.filter(c =>c.id !== id));
+        }
+        return response;
+    })
 }
 
 function find(id){
     return axios
-    .get("http://127.0.0.1:8000/api/customers/" + id)
+    .get(CUSTOMERS_API + "/" + id)
     .then(response => response.data);
 }
 
 function update(id, customer){
 return axios.put(
-    "http://127.0.0.1:8000/api/customers/" + id,
+    CUSTOMERS_API + "/" + id,
     customer
-  );
+  ).then(response => {
+      Cache.invalidate("customers");
+      return response;
+  });
 }
 
 function create(customer){
     return axios.post(
-        "http://127.0.0.1:8000/api/customers",
+        CUSTOMERS_API,
         customer
-      );
+      ).then(async response => {const cachedCustomers = await Cache.get("customers");
+
+      if (cachedCustomers){
+              Cache.set("customers", [...cachedCustomers, response.data]);
+      }
+      return response;
+    });
 }
 export default {
     findAll,
