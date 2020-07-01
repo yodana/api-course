@@ -6,6 +6,7 @@ use App\Entity\Invoice;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 
 /**
  * @method Invoice|null find($id, $lockMode = null, $lockVersion = null)
@@ -21,7 +22,9 @@ class InvoiceRepository extends ServiceEntityRepository
     }
 
     public function findLastChrono(User $user){
-        return $this->createQueryBuilder("i")
+
+        try{
+            return $this->createQueryBuilder("i")
             ->select("i.chrono")
             ->join("i.customer", "c")
             ->where("c.user = :user")
@@ -30,6 +33,10 @@ class InvoiceRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getSingleScalarResult() + 1;
+        }catch(\Exception $e)
+        {
+            return 1;
+        }
     }
     // /**
     //  * @return Invoice[] Returns an array of Invoice objects
