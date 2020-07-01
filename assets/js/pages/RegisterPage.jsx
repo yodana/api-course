@@ -3,6 +3,7 @@ import Field from "../components/File";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import userAPI from "../services/userAPI";
+import { toast } from "react-toastify";
 
 const RegisterPage = ({history}) => {
   const [user, setUser] = useState({
@@ -29,11 +30,14 @@ const RegisterPage = ({history}) => {
     if(user.password !== user.passwordConfirm){
         apiErrors.passwordConfirm ="Ne correspond pas";
         setErrors(apiErrors);
+        toast.error("Erreur dans l'inscription");
         return ;
     }
     try{
         const response = await userAPI.register(user);
         setErrors({});
+        toast.success("vous etes inscrit vous pouvez vous connecter");
+
     history.replace('/login');
     }catch(error){
         const {violations} = error.response.data;
@@ -44,6 +48,7 @@ const RegisterPage = ({history}) => {
             });
             setErrors(apiErrors);
         }
+        toast.error("Erreur dans l'inscription");
     }
   };
   return (

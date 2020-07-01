@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Field from "../components/File";
 import { Link } from "react-router-dom";
 import CustomersAPI from "../services/customersAPI";
+import { toast } from "react-toastify";
 
 const CustomerPage = ({ match, history }) => {
   const { id = "new" } = match.params;
@@ -44,6 +45,7 @@ const CustomerPage = ({ match, history }) => {
       } else {
         const response = await CustomersAPI.create(customer);
       }
+      toast.success("Un client a bien ete rajoute");
       history.replace("/customers");
       setErrors({});
     } catch (error) {
@@ -53,6 +55,7 @@ const CustomerPage = ({ match, history }) => {
           apiErrors[violation.propertyPath] = violation.message;
         });
         setErrors(apiErrors);
+        toast.error("Erreur dans le formulaire de rajout du client");
       }
     }
   };
